@@ -37,7 +37,7 @@ def main():
     test = '12131415'
     test_sum = calc_sum(test, find_halfway_matching_pairs)
     assert test_sum == 4
-    input_txt = Input('01')
+    input_txt = Input(1)
     input_sum_one = calc_sum(input_txt, find_direct_matching_pairs)
     input_sum_two = calc_sum(input_txt, find_halfway_matching_pairs)
     print('Sum Part 1: {}'.format(input_sum_one))
