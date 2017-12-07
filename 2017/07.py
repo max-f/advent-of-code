@@ -1,20 +1,18 @@
 #!/usr/bin/env python
 
-from utils import utils
 import re
+
 import networkx as nx
 
+from utils import utils
 
-class Tree(object): 
+
+class Tree(object):
     def __init__(self, root, G):
         self.root = root
         self.graph = G
         self.shortest_path_lengths = dict(nx.all_pairs_shortest_path_length(G))
-        # print(self.shortest_path_lengths)
         self.levels = self.get_max()
-        # print(self.levels)
-        print(self.get_nodes_of_level(1))
-        # self.levels = max(self.shortest_path_lengths.values)
 
     def get_max(self) -> int:
         max_v = 0
@@ -24,39 +22,73 @@ class Tree(object):
                     max_v = self.shortest_path_lengths[i][j]
         return max_v
 
-    def get_nodes_of_level(self, level: int) -> list:
-        nodes = []
+    def get_nodes_of_level(self, level: int) -> set:
+        nodes = set()
         for x in self.shortest_path_lengths[self.root].keys():
             if self.shortest_path_lengths[self.root][x] == level:
-                nodes.append(x)
+                nodes.add(x)
         return nodes
 
-    def get_direct_siblings(self, node: str) -> set:
-        siblings = set()
+    def get_all_siblings(self, node: str) -> list:
         parents = list(self.graph.predecessors(node))
         if len(parents) != 1:
             return None
         edges = self.graph.out_edges(parents[0])
-        siblings = {child for parent, child in edges if child != node}
+        siblings = [child for parent, child in edges]
         return siblings
 
-    def get_cummulative_child_weights(self, node: str) -> int:
+    def get_cummulative_child_weight(self, node: str) -> int:
         out_edges = self.graph.out_edges(node)
         children = [child for parent, child in out_edges]
-        return sum([self.graph.node[child]['weight'] for child in children])
+        return sum([self.graph.node[child]['cweight'] for child in children])
 
+    def find_unbalanced_sibling(self, siblings: list):
+        sibling_weights = [self.graph.node[sibling]['cweight'] for sibling in siblings]
+        max_weight = max(sibling_weights)
+        min_weight = min(sibling_weights)
+        if not all(w == max_weight for w in sibling_weights):
+            if sibling_weights.count(max_weight) > sibling_weights.count(min_weight):
+                idx = sibling_weights.index(min_weight)
+            else:
+                idx = sibling_weights.index(max_weight)
+            return siblings[idx]
+        return None
 
-    def is_node_balanced(self, node: str) -> bool:
-        siblings = self.get_direct_siblings(node)
-        for sibling in siblings:
-            if self.get_cummulative_child_weights(node) != self.get_cummulative_child_weights(sibling):
-                return False
-        return True
+    def find_unbalanced_node(self) -> None:
+        for i in reversed(range(self.levels + 1)):
+            lvl_nodes = self.get_nodes_of_level(i)
+            visited = set()
 
-    def find_unbalanced_node(self):
-        for i in range(self.levels + 1):
-            break
-        pass
+            for node in lvl_nodes:
+                self.graph.node[node]['cweight'] = self.graph.node[node]['weight'] \
+                                                   + self.get_cummulative_child_weight(node)
+
+            for node in lvl_nodes:
+                if node in visited:
+                    continue
+                siblings = self.get_all_siblings(node)
+                unbalanced_sibling = self.find_unbalanced_sibling(siblings)
+                if not unbalanced_sibling:
+                    visited = visited | set(siblings)
+                else:
+                    self.print_diff(siblings, unbalanced_sibling)
+                    return
+
+    def print_diff(self, siblings: list, unbalanced_node: object) -> None:
+        bad_idx = siblings.index(unbalanced_node)
+        if bad_idx == 0:
+            good_sibling = siblings[-1]
+        else:
+            good_sibling = siblings[0]
+        diff = self.graph.node[unbalanced_node]['cweight'] - self.graph.node[good_sibling]['cweight']
+        if diff < 0:
+            print('Node {0} needs a weight of {1}'.format(unbalanced_node,
+                                                          self.graph.node[unbalanced_node]['weight']
+                                                          + diff))
+        else:
+            print('Node {0} needs a weight of {1}'.format(unbalanced_node,
+                                                          self.graph.node[unbalanced_node]['weight']
+                                                          - diff))
 
 
 def part_one(day: int) -> None:
@@ -80,12 +112,10 @@ def part_one(day: int) -> None:
                     edges.append((node, child))
     tree.add_edges_from(edges)
 
-        # print('line:', line)
-    # print(tree.nodes)
     root = list(nx.topological_sort(tree))[0]
-    print(root)
+    print('Root:', root)
     my_tree = Tree(root, tree)
-    print(my_tree.graph.node['nbyij'])
+    my_tree.find_unbalanced_node()
 
 
 def main():
