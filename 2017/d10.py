@@ -31,13 +31,15 @@ def part_one(lengths: list, elements: list, idx: int = 0, skip_size: int = 0) ->
     return elements, idx, skip_size
 
 
-def part_two(lengths: list) -> None:
+def create_hash(input_str: str) -> str:
+    ascii_lengths = list(map(ord, input_str)) + [17, 31, 73, 47, 23]
+
     idx = 0
     skip_size = 0
     elements = list(range(256))
 
     for round in range(64):
-        elements, idx, skip_size = part_one(lengths, elements, idx, skip_size)
+        elements, idx, skip_size = part_one(ascii_lengths, elements, idx, skip_size)
 
     dense_hash = []
     for idx in range(0, len(elements), 16):
@@ -48,7 +50,7 @@ def part_two(lengths: list) -> None:
     hexa_str = ''
     for dense_number in dense_hash:
         hexa_str += f'{dense_number:02x}'
-    print(hexa_str)
+    return hexa_str
 
 
 def main():
@@ -58,9 +60,8 @@ def main():
     elements, idx, skip_size = part_one(lengths, list(range(256)))
     print(elements[0] * elements[1])
 
-    ascii_lengths = list(map(ord, lengths_str)) + [17, 31, 73, 47, 23]
-    print(ascii_lengths)
-    part_two(ascii_lengths)
+    hash = create_hash(lengths_str)
+    print(hash)
 
 
 if __name__ == '__main__':
