@@ -8,10 +8,7 @@ def part_one() -> None:
         idx = step(buffer, idx)
         buffer.insert(idx + 1, i)
         idx += 1
-    if len(buffer) == idx - 1:
-        print(buffer[0])
-    else:
-        print(buffer[idx + 1])
+    print('Part 1: ', buffer[buffer.index(2017) + 1])
 
 
 def step(buffer: list, start: int) -> int:
@@ -22,11 +19,13 @@ def step(buffer: list, start: int) -> int:
 def part_two() -> None:
     steps = 359
     idx = 0
+    result = 0
     for i in range(1, 50 * (10 ** 6) + 1):
         idx = (steps + idx) % i
         if idx == 0:
-            print(i)
+            result = i
         idx += 1
+    print('Part 2: ', result)
 
 def main():
     part_one()
