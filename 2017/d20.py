@@ -5,17 +5,12 @@ import numpy as np
 
 
 class Particle(object):
+
     def __init__(self, ident, p, v, a):
         self.ident = ident
         self.p = np.array([int(p[0]), int(p[1]), int(p[2])])
         self.v = np.array([int(v[0]), int(v[1]), int(v[2])])
         self.a = np.array([int(a[0]), int(a[1]), int(a[2])])
-        self.tmp_p = self.p
-        self.tmp_v = self.v
-
-    def start_over(self):
-        self.tmp_v = self.v
-        self.tmp_p = self.p
 
     def tick(self):
         self.v += self.a
@@ -26,21 +21,11 @@ class Particle(object):
 
     def __repr__(self):
         return '{}: {} {} {} {}'.format(self.__class__.__name__,
-                                  self.ident,
-                                  self.p,
-                                  self.v,
-                                  self.a
-                                  )
+                                        self.ident,
+                                        self.p,
+                                        self.v,
+                                        self.a)
 
-    def collides(self, other_particle):
-        self.start_over()
-        other_particle.start_over()
-        for i in range(20):
-            if np.array_equal(self.p, other_particle.p):
-                return True
-            self.tick()
-            other_particle.tick()
-        return False
 
 def main():
     particles = []
@@ -62,29 +47,27 @@ def main():
     # print(p2 in test)
     # print(p1 is p2)
 
-    def collided(pas):
-        seen = set()
+    def collided(particles_arg: list) -> list:
+        seen_idcs = set()
         collision = list()
-        for i in pas:
-            s_collision = [x for x in pas if x is not i and np.array_equal(i.p, x.p) and x not in seen]
+        for i, particle in enumerate(particles_arg):
+            s_collision = [j for j, x in enumerate(particles_arg) if x is not
+                           particle and np.array_equal(particle.p, x.p) and
+                           j not in seen_idcs]
             if s_collision:
                 s_collision.append(i)
-            seen |= set(s_collision)
+            seen_idcs |= set(s_collision)
             collision.extend(s_collision)
         return collision
-
 
     tmp_particles = list(particles)
     for i in range(200):
         collision = collided(tmp_particles)
-        for pa in collision:
-            tmp_particles.remove(pa)
+        for idx in reversed(sorted(collision)):
+            del tmp_particles[idx]
         [t.tick() for t in tmp_particles]
 
-
     print(len(tmp_particles))
-
-
 
 
 if __name__ == '__main__':
