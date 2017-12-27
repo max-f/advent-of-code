@@ -46,7 +46,6 @@ def part_two():
     print('Part 2: ', h)
 
 
-
 def main():
     part_one()
     part_two()
