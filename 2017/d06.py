@@ -18,7 +18,7 @@ def part_two(day: int) -> None:
         config = redistribute(max_idx, xs)
         n += 1
         if config in configs:
-            print(n - configs[config])
+            print('Part 2: ', n - configs[config])
             break
         configs[config] = n
 
@@ -38,7 +38,7 @@ def part_one(day: int) -> None:
             break
         configs.add(config)
 
-    print(n)
+    print('Part 1: ', n)
 
 
 def redistribute(idx: int, xs: list) -> tuple:

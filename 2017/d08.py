@@ -28,7 +28,6 @@ def execute_instructions(day: int) -> None:
     for line in input_str.split('\n'):
         match = regex.match(line)
         if match:
-            print(match.group(1))
             mod_register = match.group(1)
             mod_op = match.group(2)
             mod_value = int(match.group(3))
@@ -44,8 +43,8 @@ def execute_instructions(day: int) -> None:
                 if registers[mod_register] > max_value:
                     max_value = registers[mod_register]
 
-    print(max(registers.values()))
-    print(max_value)
+    print('Part 1: ', max(registers.values()))
+    print('Part 2: ', max_value)
 
 
 def main():

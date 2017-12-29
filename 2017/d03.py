@@ -35,7 +35,7 @@ def part_two(num: int) -> int:
                 size += 1
             else:
                 dx, dy = left_turn(dx, dy)
-            
+
         x += dx
         y += dy
 

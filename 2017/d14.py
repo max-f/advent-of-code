@@ -25,12 +25,12 @@ def create_grid(input_str: str) -> None:
 
     groups = 0
     while used_positions:
-        to_bre_removed = [used_positions[0]]
-        while to_bre_removed:
-            (x, y) = to_bre_removed.pop()
+        to_be_removed = [used_positions[0]]
+        while to_be_removed:
+            (x, y) = to_be_removed.pop()
             if (x, y) in used_positions:
                 used_positions.remove((x, y))
-                to_bre_removed.extend([(x-1, y), (x, y-1), (x+1, y), (x, y+1)])
+                to_be_removed.extend([(x-1, y), (x, y-1), (x+1, y), (x, y+1)])
         groups += 1
     print(groups)
 
