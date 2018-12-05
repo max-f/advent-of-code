@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 
-from collections import defaultdict
-from operator import itemgetter
-
 from utils import utils
 
+
 def scan_polymers(text_list):
-    changed = True 
+    changed = True
     while changed:
         changed = False
         for i, c in enumerate(text_list):
@@ -20,7 +18,7 @@ def scan_polymers(text_list):
                     text_list.pop(i)
                     changed = True
             else:
-                if i > 0 and text_list[i-1] == c.upper():
+                if i > 0 and text_list[i - 1] == c.upper():
                     text_list.pop(i - 1)
                     text_list.pop(i - 1)
                     changed = True
@@ -30,31 +28,33 @@ def scan_polymers(text_list):
                     changed = True
     return text_list
 
+
 def replace_polymer(text, p):
-    text = text.replace(p, '')
-    text = text.replace(p.upper(), '')
+    text = text.replace(p, "")
+    text = text.replace(p.upper(), "")
     return len(scan_polymers(list(text)))
-       
+
 
 def main():
     text = utils.get_input(5)
+    # Test
     # text = 'dabAcCaCBAcCcaDA'
     text = text.strip()
-    # text_list = list(text)
+    text_list = list(text)
     # print(text_list)
-    # text_list = scan_polymers(text_list)
-    # print(f'Part 1: {len(text_list)}')
+    text_list = scan_polymers(text_list)
+    print(f"Part 1: {len(text_list)}")
+
     polymers = set(text.lower())
     shortest = len(text)
-    best = ''
+    best = ""
     for p in polymers:
         cur_length = replace_polymer(text, p)
         if cur_length < shortest:
             shortest = cur_length
             best = p
-            print(shortest)
     print(best)
-    print(shortest)
+    print(f"Part 2: {shortest}")
 
 
 if __name__ == "__main__":
