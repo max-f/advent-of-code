@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-from collections import defaultdict
-from utils import utils
 import re
+from collections import defaultdict
+
+from utils import utils
 
 
 def create_rectangle_set(line):
