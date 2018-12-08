@@ -46,7 +46,7 @@ def get_node_2(data, idx):
     else:
         refs = data[meta_data_range : meta_data_range + metadata_entries]
         for ref in refs:
-            if ref == 0 or ref > len(meta_sums_child):
+            if not ref or ref > len(meta_sums_child):
                 continue
             meta_sum += meta_sums_child[ref - 1]
 
