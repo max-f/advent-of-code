@@ -1,59 +1,65 @@
 #!/usr/bin/env python
 
-from utils import utils
-from collections import defaultdict
-from collections import deque
-import operator
 import re
 
+from utils import utils
 
-X_BOUNDARY = 20
-Y_BOUNDARY = 10
+ITERATIONS = 100000
+RANGE = 80
 
-def print_data(positions):
+
+def print_data(positions, n, min_x, max_x, min_y, max_y):
     print()
     print()
-    for y in range(-Y_BOUNDARY, Y_BOUNDARY):
-        for x in range(-X_BOUNDARY, X_BOUNDARY):
+    print("#" * 30)
+    print("Iteration: ", n + 1)
+    for y in range(min_y, max_y + 1):
+        for x in range(min_x, max_x + 1):
             if (x, y) in positions:
-                print('#', end='')
+                print("#", end="")
             else:
-                print('.', end='')
-        print('\n')
+                print(".", end="")
+        print("\n")
 
 
 def main():
-    data = utils.get_input(11)
-    data = data.split('\n')[:-1]
-    positions = dict()
+    data = utils.get_input(10)
+    data = data.split("\n")[:-1]
+    positions = []
+    velocities = []
 
-    pattern = r'^.*([- ]+[0-9]+).*([- ]+[0-9]+).*([- ]+[0-9]+).*([- ]+[0-9]+)>.*$'
+    pattern = r"^.*<([- 0-9]+),([- 0-9]+).*<([- 0-9]+),([- 0-9]+)>.*$"
     regex = re.compile(pattern)
 
-    for line in data:
+    for i, line in enumerate(data):
         match = regex.match(line)
         if match:
             pos_x = int(match.group(1))
             pos_y = int(match.group(2))
             vel_x = int(match.group(3))
             vel_y = int(match.group(4))
-            positions[(pos_x, pos_y)] = (vel_x, vel_y)
+            positions.append((pos_x, pos_y))
+            velocities.append((vel_x, vel_y))
+        else:
+            print("WARN: ", line)
 
-    print_data(positions)
+    print("Length pos: ", len(positions))
+    print("Length vel: ", len(velocities))
 
-    n = 4
-    for _ in range(n):
-        new_pos = dict()
-        for p in positions.keys():
-            v_x, v_y = positions[p]
-            new_pos[(p[0] - v_x, p[1] - v_y)] = (v_x, v_y)
+    for n in range(ITERATIONS):
+        new_pos = []
+        for i, (p_x, p_y) in enumerate(positions):
+            v_x, v_y = velocities[i][0], velocities[i][1]
+            new_pos.append((p_x + v_x, p_y + v_y))
         positions = new_pos
-        print_data(positions)
+        min_x = min([x for x, y in positions])
+        max_x = max([x for x, y in positions])
+        min_y = min([y for x, y in positions])
+        max_y = max([y for x, y in positions])
 
+        if min_x + RANGE >= max_x and min_y + RANGE >= max_y:
+            print_data(positions, n, min_x, max_x, min_y, max_y)
 
-
-    print(data)
-    #print(positions)
 
 if __name__ == "__main__":
     main()
