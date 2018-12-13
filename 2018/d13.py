@@ -28,7 +28,8 @@ class Cart:
             self.direction = cart_turn_right[self.direction]
             self.turn = "left"
 
-    def can_crash(self, other):
+    # To check for crash
+    def __eq__(self, other):
         return (
             not self.crashed
             and not other.crashed
@@ -51,7 +52,7 @@ def tick(trackmap, carts):
             continue
         move(trackmap, cart)
         for cart1, cart2 in itertools.combinations(carts, 2):
-            if cart1.can_crash(cart2):
+            if cart1 == cart2:
                 if not FIRST_CRASH:
                     FIRST_CRASH = f"{cart1.x},{cart1.y}"
                 cart1.crashed = True
