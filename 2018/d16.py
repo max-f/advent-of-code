@@ -162,7 +162,7 @@ def main():
 
     for i, line in enumerate(lines_p1):
         if "Before" in line:
-            op_lines = lines_p1[i : i + 3]
+            op_lines = lines_p1[i:i + 3]
 
             reg_before = parse(op_lines[0])
             op = parse(op_lines[1])
@@ -176,7 +176,8 @@ def main():
             if f(op.op[1], op.op[2], op.op[3], op.before) == op.after:
                 op.possible_ops.append(f)
 
-    three_and_above = len([op for op in operations if len(op.possible_ops) >= 3])
+    three_and_above = len(
+        [op for op in operations if len(op.possible_ops) >= 3])
     print(f"Part 1 {three_and_above}")
 
     op_assignments = find_op_codes(operations, op_assignments)

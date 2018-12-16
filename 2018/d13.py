@@ -30,12 +30,8 @@ class Cart:
 
     # To check for crash
     def __eq__(self, other):
-        return (
-            not self.crashed
-            and not other.crashed
-            and self.x == other.x
-            and self.y == other.y
-        )
+        return (not self.crashed and not other.crashed and self.x == other.x
+                and self.y == other.y)
 
     # For sorting
     def __lt__(self, other):
@@ -122,7 +118,7 @@ def main():
     cart_to_track = {"^": "|", "v": "|", "<": "|", ">": "|"}
 
     for y, line in enumerate(data):
-        for x, c in enumerate((line)):
+        for x, c in enumerate(line):
             if c in ["^", "v", ">", "<"]:
                 carts.append(Cart(x, y, c))
                 trackmap[x][y] = cart_to_track[c]
