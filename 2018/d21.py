@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import re
-from collections import defaultdict
-
 from utils import utils
 
 
@@ -40,6 +37,8 @@ def muli(a, b, c, registers):
 
 def banr(a, b, c, registers):
     registers_new = registers.copy()
+    a = sum([ord(x) for x in str(a)])
+    b = sum([ord(x) for x in str(b)])
     registers_new[c] = registers[a] & registers[b]
     return registers_new
 
@@ -52,12 +51,16 @@ def bani(a, b, c, registers):
 
 def borr(a, b, c, registers):
     registers_new = registers.copy()
+    a = sum([ord(x) for x in str(a)])
+    b = sum([ord(x) for x in str(b)])
     registers_new[c] = registers[a] | registers[b]
     return registers_new
 
 
 def bori(a, b, c, registers):
     registers_new = registers.copy()
+    a = sum([ord(x) for x in str(a)])
+    b = sum([ord(x) for x in str(b)])
     registers_new[c] = registers[a] | b
     return registers_new
 
@@ -110,89 +113,64 @@ def eqrr(a, b, c, registers):
     return registers_new
 
 
-def parse(line):
-    return list(map(int, re.findall(r"\d+", line)))
-
-
-def get_operations_with_x_possibilities(operations, x):
-    two_possible = [op for op in operations if len(op.possible_ops) == x]
-    return two_possible
-
-
-def remove_possibilities(operations, op_assignments):
-    for op in operations:
-        for i, f in enumerate(op.possible_ops):
-            if f in op_assignments.values() and not op.op[0] in op_assignments:
-                del op.possible_ops[i]
-
-
-def find_op_codes(operations, op_assignments):
-    op_assignments_new = op_assignments.copy()
-    while len(op_assignments_new) < 16:
-        only_one_possible = get_operations_with_x_possibilities(operations, 1)
-        for op in only_one_possible:
-            op_assignments_new[op.op[0]] = op.possible_ops[0]
-        remove_possibilities(operations, op_assignments_new)
-    return op_assignments_new
-
-
 def main():
-    operations = []
-    functions = [
-        addr,
-        addi,
-        mulr,
-        muli,
-        banr,
-        bani,
-        borr,
-        bori,
-        setr,
-        seti,
-        gtir,
-        gtri,
-        gtrr,
-        eqir,
-        eqri,
-        eqrr,
-    ]
-    op_assignments = dict()
+    functions = {
+        'addr': addr,
+        'addi': addi,
+        'mulr': mulr,
+        'muli': muli,
+        'banr': banr,
+        'bani': bani,
+        'borr': borr,
+        'bori': bori,
+        'setr': setr,
+        'seti': seti,
+        'gtir': gtir,
+        'gtri': gtri,
+        'gtrr': gtrr,
+        'eqir': eqir,
+        'eqri': eqri,
+        'eqrr': eqrr,
+    }
 
-    data = utils.get_input(16).split("\n\n\n")
-    lines_p1 = data[0].split("\n")
+    lines = utils.get_input(21).split("\n")
+    # Read in instruction pointer binding
+    ip = int(lines[0].split()[-1])
 
-    for i, line in enumerate(lines_p1):
-        if "Before" in line:
-            op_lines = lines_p1[i:i + 3]
+    # Read in operations
+    operations = [None] * (len(lines) - 1)
+    for i, line in enumerate(lines[1:]):
+        if line:
+            op, a, b, c = line.split()
+            operations[i] = (op, int(a), int(b), int(c))
 
-            reg_before = parse(op_lines[0])
-            op = parse(op_lines[1])
-            reg_after = parse(op_lines[2])
+    print(operations)
+    print(len(operations))
 
-            this_op = Operation(reg_before, op, reg_after)
-            operations.append(this_op)
+    # Set initial register values
+    # Part 1
+    # registers = [0] * 6
+    # Part 2
+    minimal = 0
+    for x in range(10000):
+        registers = [x, 0, 0, 0, 0, 0]
+        iterations = 0
 
-    for op in operations:
-        for f in functions:
-            if f(op.op[1], op.op[2], op.op[3], op.before) == op.after:
-                op.possible_ops.append(f)
+        while iterations < 500:
+            if registers[ip] < 0 or registers[ip] > len(operations):
+                minimal = x
+                print(minimal)
+                return
+            #print('before', registers, end='  ')
+            next_op, a, b, c = operations[registers[ip]]
+            registers = functions[next_op](a, b, c, registers)
 
-    three_and_above = len(
-        [op for op in operations if len(op.possible_ops) >= 3])
-    print(f"Part 1 {three_and_above}")
+            # Default increment instruction pointer by 1
+            registers[ip] += 1
+            #print('after', registers)
+            iterations += 1
 
-    op_assignments = find_op_codes(operations, op_assignments)
-
-    final_registers = [0] * 4
-    lines_p2 = data[1].split("\n")
-    for line in lines_p2:
-        line = line.strip()
-        if not line:
-            continue
-        op, a, b, c = list(map(int, line.split()))
-        f = op_assignments[op]
-        final_registers = f(a, b, c, final_registers)
-    print(f"Part 2: {final_registers[0]}")
+    print(registers[0])
 
 
 if __name__ == "__main__":

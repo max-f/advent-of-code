@@ -57,9 +57,17 @@ class Actor():
 
     def find_move_with_bfs(self, possibilities):
         start = Map[self.x][self.y]
+
+        # Queue holding the Fields still to visit
         to_check = deque([(start, 0)])
-        # TODO
-        distance_info = {}
+
+        # Dict holding the distance from start and the previous Field for all
+        # visited fields
+        # Key: Fields
+        # Value: tuple(distance, Field)
+        distance_from_start = dict()
+        distance_from_start[start] = (0, None)
+
         visited = set()
         # TODO
         occupied = set()
@@ -72,6 +80,8 @@ class Actor():
                 if adjacent == self or adjacent in occupied:
                     continue
                 # TODO: Update distance info if smaller distance is found
+                if adjacent
+                distance
 
                 # Field was already visited
                 if adjacent in visited:
