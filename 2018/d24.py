@@ -42,7 +42,7 @@ class Group():
                  attack,
                  attack_type,
                  initiative,
-                 type,
+                 group_type,
                  weak=None,
                  immune=None):
         self.units = units
@@ -50,15 +50,10 @@ class Group():
         self.attack = attack
         self.attack_type = attack_type
         self.initiative = initiative
-        self.type = type
+        self.group_type = group_type
         self.weak = weak
         self.immune = immune
-
-    def power(self):
-        """
-        Calculate effective power.
-        """
-        return self.units * self.attack
+        self.targeted = False
 
     def __lt__(self, other):
         """
@@ -68,9 +63,22 @@ class Group():
             return self.initiative < other.initiative
         return self.power() < other.power()
 
-    def get_target(self, groups):
-        for g in groups:
-            if g 
+    def power(self):
+        """
+        Calculate effective power.
+        """
+        return self.units * self.attack
+
+    def get_adversaries(self, groups):
+        adversary_type = abs(self.group_type - 1)
+        return [g for g in groups if g.group_type == adversary_type]
+
+    def get_target(self, adversaries):
+        possible_adversaries = [adv for adv in adversaries if not adv.targeted]
+        if possible_adversaries:
+            return sorted(
+                possible_adversaries, key=self.attack_damage, reverse=True)[0]
+        return None
 
     def attack_damage(self, other):
         if self.attack_type in other.weak:
@@ -87,12 +95,16 @@ class Group():
             modified.units = 0
         else:
             modified.units -= losses
+        return modified
 
 
 def tick(groups):
     for group in sorted(groups):
-        max_dmg = None
-
+        adversaries = group.get_adversaries(groups)
+        target = group.get_target(adversaries)
+        # TODO: attack and save modified versions of targets, modify list of
+        # groups after tick
+        return
 
 
 def main():
@@ -107,8 +119,15 @@ def main():
         parse_result = parse(line)
         if parse_result:
             units, hit_points, attack, attack_type, initiative, weak, immune = parse_result
-            group = Group(units, hit_points, attack, attack_type, initiative, type=0,
-                          weak, immune)
+            group = Group(
+                units,
+                hit_points,
+                attack,
+                attack_type,
+                initiative,
+                group_type=0,
+                weak=weak,
+                immune=immune)
             groups.append(group)
 
     # Infection
@@ -116,14 +135,21 @@ def main():
         parse_result = parse(line)
         if parse_result:
             units, hit_points, attack, attack_type, initiative, weak, immune = parse_result
-            group = Group(units, hit_points, attack, attack_type, initiative, type=1,
-                          weak, immune)
+            group = Group(
+                units,
+                hit_points,
+                attack,
+                attack_type,
+                initiative,
+                group_type=1,
+                weak=weak,
+                immune=immune)
             groups.append(group)
 
     print(len(immune_system))
     print(len(infection))
 
-    tick(immune_sytem, infection)
+    tick(groups)
 
 
 if __name__ == "__main__":
