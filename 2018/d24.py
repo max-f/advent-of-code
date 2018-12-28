@@ -37,6 +37,7 @@ def parse(line):
 
 class Group():
     def __init__(self,
+                 id_,
                  units,
                  hit_points,
                  attack,
@@ -45,6 +46,7 @@ class Group():
                  group_type,
                  weak=None,
                  immune=None):
+        self.id_ = id_
         self.units = units
         self.hit_points = hit_points
         self.attack = attack
@@ -87,10 +89,11 @@ class Group():
             return 0
         return self.power()
 
-    def attack(self, other):
+    def do_attack(self, other):
         damage = self.attack_damage(other)
         losses = damage // other.hit_points
         modified = deepcopy(other)
+        modified.targeted = False
         if losses >= modified.hit_points:
             modified.units = 0
         else:
@@ -99,27 +102,39 @@ class Group():
 
 
 def tick(groups):
-    for group in sorted(groups):
-        adversaries = group.get_adversaries(groups)
+    targets = []
+    for group in sorted(groups.values()):
+        adversaries = group.get_adversaries(groups.values())
         target = group.get_target(adversaries)
-        # TODO: attack and save modified versions of targets, modify list of
-        # groups after tick
-        return
+        if target:
+            target.targeted = True
+            modified_target = group.do_attack(target)
+            targets.append(modified_target)
+
+    for modified in targets:
+        if modified.units == 0:
+            del groups[modified.id_]
+        else:
+            groups[modified.id_] = modified
+
+    return groups
 
 
 def main():
-    immune_data, infection_data = utils.get_input(24).split('\n\n')
+    immune_data, infection_data = utils.get_input(42).split('\n\n')
     immune_lines = immune_data.split('\n')
     infection_lines = infection_data.split('\n')
 
-    groups = []
+    groups = dict()
 
     # Immune system
     for i, line in enumerate(immune_lines[1:]):
         parse_result = parse(line)
         if parse_result:
             units, hit_points, attack, attack_type, initiative, weak, immune = parse_result
+            id_ = i
             group = Group(
+                id_,
                 units,
                 hit_points,
                 attack,
@@ -128,14 +143,16 @@ def main():
                 group_type=0,
                 weak=weak,
                 immune=immune)
-            groups.append(group)
+            groups[id_] = group
 
     # Infection
     for i, line in enumerate(infection_lines[1:]):
         parse_result = parse(line)
         if parse_result:
             units, hit_points, attack, attack_type, initiative, weak, immune = parse_result
+            id_ = i + len(immune_lines) - 1,
             group = Group(
+                id_,
                 units,
                 hit_points,
                 attack,
@@ -144,12 +161,25 @@ def main():
                 group_type=1,
                 weak=weak,
                 immune=immune)
-            groups.append(group)
+            groups[id_] = group
 
-    print(len(immune_system))
-    print(len(infection))
+    print(len(groups))
 
-    tick(groups)
+    idx = 0
+    while True:
+        if idx % 10000 == 0:
+            print(idx)
+            print(len(groups))
+        tick(groups)
+
+        # Immune: group_type 0, Infection: group type 1
+        if not (any(g.group_type == 0 for g in groups.values())
+                and any(g.group_type == 1 for g in groups.values())):
+            break
+        idx += 1
+
+    part1 = sum([g.units for g in groups.values()])
+    print(f'Part 1: {part1}')
 
 
 if __name__ == "__main__":
