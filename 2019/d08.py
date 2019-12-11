@@ -34,7 +34,7 @@ def part2(input_txt) -> None:
                 break
     for y in range(height):
         row = img[y * width:y * width + width]
-        transformed_row = ['X' if c == '1' else ' ' for c in row]
+        transformed_row = ['\u2588' if c == '1' else ' ' for c in row]
         print(''.join(transformed_row))
 
 
@@ -43,6 +43,7 @@ def main():
     p1 = part1(input_txt)
     print(f"Part 1: {p1}")
 
+    print("Part 2")
     part2(input_txt)
 
 
