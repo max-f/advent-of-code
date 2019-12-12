@@ -4,7 +4,7 @@ import copy
 from collections import deque, defaultdict
 
 from enum import Enum
-from utils.utils import get_input, ints
+from utils.utils import get_input, ints, tuple_add
 from utils.intcode import Machine, State
 
 
@@ -13,10 +13,6 @@ class Direction(Enum):
     LEFT = (-1, 0)
     RIGHT = (1, 0)
     DOWN = (0, -1)
-
-
-def tuple_add(t1, t2):
-    return tuple(map(sum, zip(t1, t2)))
 
 
 turn = {
@@ -78,11 +74,12 @@ def main():
     board2 = run_robot(code, 1)
 
     print(f'Part 1: {len(board1)}')
+    print()
+    print('Part 2')
     width_min = min(board2.keys(), key=lambda x: x[0])[0]
     width_max = max(board2.keys(), key=lambda x: x[0])[0]
     height_min = min(board2.keys(), key=lambda x: x[1])[1]
     height_max = max(board2.keys(), key=lambda x: x[1])[1]
-    print(f'{width_min} - {width_max} - {height_min} - {height_max}')
     for y in reversed(range(height_min, height_max + 1)):
         line = ''
         for x in range(width_min, width_max + 1):

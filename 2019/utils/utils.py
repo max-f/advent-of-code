@@ -44,3 +44,8 @@ def positive_floats(s: str) -> typing.List[float]:
 
 def words(s: str) -> typing.List[str]:
     return re.findall(r"[a-zA-Z]+", s)
+
+
+def tuple_add(t1, t2):
+    return tuple(map(sum, zip(t1, t2)))
+
