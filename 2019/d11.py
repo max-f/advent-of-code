@@ -50,10 +50,14 @@ def run_robot(intcode, starting_tile):
         elif out[0] == 1:
             board[position] = 1
         else:
-            raise Exception(f"First output value does not indicate black or white: {out[0]}")
+            raise Exception(
+                f"First output value does not indicate black or white: {out[0]}"
+            )
 
         if out[1] != 0 and out[1] != 1:
-            raise Exception(f"Second output value does not indicate left or right: {out[1]}")
+            raise Exception(
+                f"Second output value does not indicate left or right: {out[1]}"
+            )
 
         facing = turn[(out[1], facing)]
         position = tuple_add(position, facing.value)
@@ -79,7 +83,7 @@ def main():
     height_min = min(board2.keys(), key=lambda x: x[1])[1]
     height_max = max(board2.keys(), key=lambda x: x[1])[1]
     print(f'{width_min} - {width_max} - {height_min} - {height_max}')
-    for y in range(height_min, height_max + 1):
+    for y in reversed(range(height_min, height_max + 1)):
         line = ''
         for x in range(width_min, width_max + 1):
             if board2[(x, y)]:
