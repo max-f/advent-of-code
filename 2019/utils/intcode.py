@@ -42,7 +42,7 @@ class Machine:
         pass
 
     def op_output(self, value: int):
-        print(f'Output: {value}')
+        # print(f'Output: {value}')
         self.out.append(value)
 
     def op_jump_true(self, x: int, idx: int):
