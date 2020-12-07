@@ -10,12 +10,11 @@ Code for https://adventofcode.com/2020/day/2
 
 def part1(all_text: str) -> int:
     total_valid = 0
-    pattern = "(\d+)-(\d+) (\w): (\w+)"
+    pattern = r"(\d+)-(\d+) (\w): (\w+)"
     regex = re.compile(pattern)
     for line in all_text.split("\n"):
         match = regex.match(line)
         if not match:
-            print("Hmm?")
             continue
         minimum = int(match.group(1))
         maximum = int(match.group(2))
@@ -33,7 +32,6 @@ def part2(all_text: str) -> int:
     for line in all_text.split("\n"):
         match = regex.match(line)
         if not match:
-            print("Hmm?")
             continue
         pos1 = int(match.group(1))
         pos2 = int(match.group(2))

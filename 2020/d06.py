@@ -36,7 +36,7 @@ def calculate_common_answers(group: str) -> int:
             if not group_answers:
                 return 0
         else:
-            group_answers.update(set(person))
+            group_answers.update(person)
     return len(group_answers)
 
 
