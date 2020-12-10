@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import typing
 import re
 
 
@@ -26,23 +25,23 @@ def lmap(func, *iterables):
     return list(map(func, *iterables))
 
 
-def ints(s: str) -> typing.List[int]:
+def ints(s: str) -> list[int]:
     return lmap(int, re.findall(r"-?\d+", s))  # thanks mserrano!
 
 
-def positive_ints(s: str) -> typing.List[int]:
+def positive_ints(s: str) -> list[int]:
     return lmap(int, re.findall(r"\d+", s))  # thanks mserrano!
 
 
-def floats(s: str) -> typing.List[float]:
+def floats(s: str) -> list[float]:
     return lmap(float, re.findall(r"-?\d+(?:\.\d+)?", s))
 
 
-def positive_floats(s: str) -> typing.List[float]:
+def positive_floats(s: str) -> list[float]:
     return lmap(float, re.findall(r"\d+(?:\.\d+)?", s))
 
 
-def words(s: str) -> typing.List[str]:
+def words(s: str) -> list[str]:
     return re.findall(r"[a-zA-Z]+", s)
 
 
