@@ -8,7 +8,7 @@ Code for https://adventofcode.com/2020/day/10
 """
 
 
-def part1(numbers: list[int]):
+def part1(numbers: list[int]) -> int:
     device_joltage = max(numbers) + 3
     sorted_adapters = sorted(numbers)
 
@@ -28,12 +28,12 @@ def part1(numbers: list[int]):
     return diff_1 * diff_3
 
 
-def edges(numbers: frozenset[int], j):
-    return [j + i for i in [1, 2, 3] if j + i in numbers]
+def edges(numbers: frozenset[int], start: int) -> list[int]:
+    return [start + i for i in [1, 2, 3] if start + i in numbers]
 
 
 @lru_cache
-def search(numbers: frozenset[int], start: int, limit: int):
+def search(numbers: frozenset[int], start: int, limit: int) -> int:
     if start == limit:
         return 1
 
@@ -54,7 +54,6 @@ def main():
     numbers = utils.ints(input_txt)
     print(part1(numbers))
     print(part2(numbers))
-    # print(part2(numbers, non_valid))
 
 
 if __name__ == "__main__":
