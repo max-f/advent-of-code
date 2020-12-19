@@ -47,9 +47,9 @@ def get_neighborhood_4d(cube: tuple[int, int, int, int]):
 def main():
     input_txt = utils.get_input(17).rstrip()
     active = set()
-    for y, line in enumerate(input_txt.split('\n')):
+    for y, line in enumerate(input_txt.split("\n")):
         for x, c in enumerate(line):
-            if c == '#':
+            if c == "#":
                 active.add((x, y, 0))
     part2_active = {t + (0,) for t in active}
     print(calc(active, get_neighborhood_3d))
