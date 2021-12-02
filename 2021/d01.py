@@ -18,8 +18,8 @@ def part1(depths: list[int]) -> int:
 def part2(depths: list[int]) -> int:
     increased = 0
     for i, x in enumerate(depths[:-3]):
-        cur_window = sum(depths[i:i + 3])
-        next_window = sum(depths[i + 1:i + 4])
+        cur_window = sum(depths[i : i + 3])
+        next_window = sum(depths[i + 1 : i + 4])
         if cur_window < next_window:
             increased += 1
 
