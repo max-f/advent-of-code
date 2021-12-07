@@ -24,7 +24,7 @@ def part1(lantern_fish: list[int]) -> int:
     return len(lantern_fish)
 
 
-def part2(lantern_fish) -> int:
+def part2(lantern_fish: list[int]) -> int:
     fish_counts = [lantern_fish.count(i) for i in range(9)]
     for _ in range(256):
         new_fish_count = fish_counts.pop(0)
