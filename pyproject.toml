@@ -2,17 +2,15 @@
 name = "advent-of-code"
 version = "0.1.0"
 description = ""
-authors = ["max-f"]
-
-readme = 'README.md'
+authors = ["Max"]
+readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9.0"
-flake8 = "^3.8.4"
-networkx = "^2.5"
+python = "^3.10"
+networkx = "^2.8.8"
+numpy = "^1.23.5"
 
-[tool.poetry.dev-dependencies]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
