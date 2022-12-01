@@ -10,3 +10,5 @@ My solutions for advent of code
 [2020](http://adventofcode.com/2020)
 
 [2021](http://adventofcode.com/2021)
+
+[2022](http://adventofcode.com/2022)
