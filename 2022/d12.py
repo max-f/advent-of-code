@@ -1,20 +1,30 @@
 #!/usr/bin/env python
 
-from utils import utils
 import networkx as nx
-from pprint import pprint
+
+from utils import utils
 
 """
 Code for https://adventofcode.com/2022/day/12
 """
 
 
-def part1() -> int:
-    pass
+def part1(G, start, end) -> int:
+    return nx.shortest_path_length(G, start, end)
 
 
-def part2() -> None:
-    pass
+def part2(G, grid, end) -> int:
+    starting_points = [t for t, v in grid.items() if v == "a"]
+
+    shortest = 999
+    for s in starting_points:
+        try:
+            possible_path_length = nx.shortest_path_length(G, s, end)
+        except nx.exception.NetworkXNoPath:
+            continue
+        if possible_path_length < shortest:
+            shortest = possible_path_length
+    return shortest
 
 
 adjacent = [
@@ -42,7 +52,6 @@ def main():
             else:
                 grid[x, y] = value
 
-    # pprint(grid)
     G = nx.DiGraph()
     for coord, v in grid.items():
         neighbors = [utils.tuple_add(coord, a) for a in adjacent]
@@ -50,25 +59,9 @@ def main():
         for n in neighbors:
             if -(ord(v) - ord(grid[n])) <= 1:
                 G.add_edge(coord, n)
-    l = nx.shortest_path_length(G, start, end)
-    # print(G.edges)
-    print(f"Part 1: {l}")
 
-    starting_points = [t for t, v in grid.items() if v == "a"]
-    print(starting_points)
-
-    shortest = 999
-    for s in starting_points:
-        try:
-            l = nx.shortest_path_length(G, s, end)
-        except:
-            continue
-        if l < shortest:
-            shortest = l
-    print(shortest)
-
-    # print(f"Part1: {part1()}")
-    # print(f"Part2:")
+    print(f"Part1: {part1(G, start, end)}")
+    print(f"Part2: {part2(G, grid, end)}")
 
 
 if __name__ == "__main__":
