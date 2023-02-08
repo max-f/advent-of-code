@@ -66,7 +66,9 @@ def move(elves, moves):
             new_elves[k] = v
             continue
         moved = True
-        same_proposed = [(pos, elf) for pos, elf in elves.items() if elf.proposed == v.proposed]
+        same_proposed = [
+            (pos, elf) for pos, elf in elves.items() if elf.proposed == v.proposed
+        ]
         if len(same_proposed) == 1:
             new_elves[v.proposed] = v
             v.proposed = None
