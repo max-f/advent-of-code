@@ -1,5 +1,5 @@
 ![Advent of Code](AoC.png)
-My solutions for advent of code
+My solutions for AoC through the years
 
 [2017](http://adventofcode.com/2017)
 
