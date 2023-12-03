@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-from utils import utils
-import re
 import math
+import re
+
+from utils import utils
 
 """
 Code for https://adventofcode.com/2023/day/2
