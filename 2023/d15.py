@@ -20,17 +20,17 @@ def hash_value(s) -> int:
 
 
 def part1(s) -> int:
-    return sum(hash_value(seq) for seq in s.split(','))
+    return sum(hash_value(seq) for seq in s.split(","))
 
 
 def part2(s) -> int:
     boxes = defaultdict(dict)
-    for seq in s.split(','):
-        if '=' in seq:
-            label, lens = seq.split('=')
+    for seq in s.split(","):
+        if "=" in seq:
+            label, lens = seq.split("=")
             box_number = hash_value(label)
             boxes[box_number][label] = int(lens)
-        elif '-' in seq:
+        elif "-" in seq:
             label = seq[:-1]
             box_number = hash_value(label)
             boxes[box_number].pop(label, None)
