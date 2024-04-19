@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from utils import utils
-from pprint import pprint
 
 """
 Code for https://adventofcode.com/2023/day/14
@@ -27,53 +26,68 @@ def slide_north(grid):
     return grid
 
 
-
 def part1(grid: list[list[str]]) -> int:
     grid = slide_north(grid)
-    pprint(grid)
 
+    result = calc_result(grid)
+    return result
+
+
+def stringify(grid):
+    return "\n".join("".join(row) for row in grid)
+
+
+def do_one_cycle(grid):
+    grid = slide_north(grid)
+
+    # west
+    grid = [row[::-1] for row in transpose(grid)]
+    grid = slide_north(grid)
+
+    # south
+    grid = [row[::-1] for row in transpose(grid)]
+    grid = slide_north(grid)
+
+    # east
+    grid = [row[::-1] for row in transpose(grid)]
+    grid = slide_north(grid)
+
+    grid = [row[::-1] for row in transpose(grid)]
+    return grid
+
+
+def calc_result(grid):
     result = 0
     for y, row in enumerate(grid):
         for x, cell in enumerate(row):
             if cell == "O":
                 result += len(grid) - y
-
     return result
 
 
 def part2(grid: list[list[str]]) -> int:
-    for _ in range(1):
-        grid = slide_north(grid)
+    seen_configs = {}
 
-        # west
-        grid = transpose(grid)
-        grid = slide_north(grid)
+    for idx in range(int(1e9)):
+        config = stringify(grid)
+        if config not in seen_configs:
+            seen_configs[config] = idx
+        else:
+            cycle_length = idx - seen_configs[config]
+            remaining = (int(1e9) - idx) % cycle_length
 
-        # south
-        grid = transpose(grid)
-        grid = slide_north(grid)
+            for _ in range(remaining):
+                grid = do_one_cycle(grid)
+            break
 
-        # east
-        grid = transpose(grid)
-        grid = slide_north(grid)
+        grid = do_one_cycle(grid)
 
-        grid = transpose(grid)
-
-    pprint(grid)
-    result = 0
-    for y, row in enumerate(grid):
-        for x, cell in enumerate(row):
-            if cell == "O":
-                result += len(grid) - y
-
-    pprint(grid)
+    result = calc_result(grid)
     return result
 
 
-
-
 def main():
-    input_txt = utils.get_input(77)
+    input_txt = utils.get_input(14)
     grid = [list(row) for row in input_txt.strip().split("\n")]
     grid2 = [list(row) for row in input_txt.strip().split("\n")]
 
