@@ -14,3 +14,6 @@ My solutions for AoC through the years
 [2022](http://adventofcode.com/2022)
 
 [2023](http://adventofcode.com/2023)
+
+[2024](http://adventofcode.com/2024)
+
