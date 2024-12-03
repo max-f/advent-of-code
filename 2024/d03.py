@@ -8,42 +8,30 @@ Code for https://adventofcode.com/2024/day/3
 """
 
 
-def part1(line: str) -> int:
-    print(line)
-    total = 0
-    result = re.finditer(r"mul\((\d+),(\d+)\)", line)
-    for hit in result:
-        number1 = hit.group(1)
-        number2 = hit.group(2)
-        total += int(number1) * int(number2)
+MULTIPLY_PATTERN = r"mul\((\d+),(\d+)\)"
+DO_PATTERN = r"do\(\)"
+DONT_PATTERN = r"don't\(\)"
 
-    return total
+
+def part1(line: str) -> int:
+    matches = re.finditer(MULTIPLY_PATTERN, line)
+    return sum([int(mul.group(1)) * int(mul.group(2)) for mul in matches])
 
 
 def part2(line: str) -> int:
-    result = re.finditer(r"mul\((\d+),(\d+)\)", line)
-    mul_statements = []
-    for hit in result:
-        number1 = hit.group(1)
-        number2 = hit.group(2)
-        print(number1, number2)
-        print(hit.start(0))
-        mul_statements.append((int(number1) * int(number2), hit.start(0)))
-    dos = [m.start(0) for m in re.finditer(r"do\(\)", line)]
-    donts = [m.start(0) for m in re.finditer(r"don't\(\)", line)]
+    matches = re.finditer(MULTIPLY_PATTERN, line)
+    muls = [(int(mul.group(1)) * int(mul.group(2)), mul.start(0)) for mul in matches]
+    dos = [m.start(0) for m in re.finditer(DO_PATTERN, line)]
+    donts = [m.start(0) for m in re.finditer(DONT_PATTERN, line)]
 
-
-    print(donts)
-    print(mul_statements)
     total = 0
-    for n, idx in mul_statements:
+    for n, idx in muls:
         closest_do = max((d for d in dos if d < idx), default=-1)
         closest_dont = max((d for d in donts if d < idx), default=-1)
         if closest_dont > closest_do:
             continue
         total += n
     return total
-
 
 
 def main():
