@@ -24,7 +24,7 @@ def get_middle_value(nums: list[int]) -> int:
     return nums[len(nums) // 2]
 
 
-def is_valid(update: list[int], rules: dict[int, set[int]]) -> bool:
+def is_valid(update: list[int], rules: RuleDict) -> bool:
     for i, n1 in enumerate(update):
         for n2 in update[i + 1 :]:
             if n2 in rules[n1]:
@@ -47,7 +47,7 @@ def get_correct_order(update: list[int], rules: RuleDict) -> list[int]:
     return list(ts.static_order())
 
 
-def part2(updates: list[list[int]], rules: dict[int, set[int]]) -> int:
+def part2(updates: list[list[int]], rules: RuleDict) -> int:
     total = 0
     for update in updates:
         if is_valid(update, rules):
