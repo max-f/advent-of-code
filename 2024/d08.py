@@ -19,7 +19,7 @@ def is_valid_pos(pos, max_x, max_y) -> bool:
 def part1(antennas: AntennaDict, max_x: int, max_y: int) -> int:
     antinodes = set()
 
-    def calc_antinode_pos(a1: tuple[int, int], a2: tuple[int, int]) -> None:
+    def calc_antinode_pos() -> None:
         y1, x1 = a1
         y2, x2 = a2
         new_x = x2 + (x2 - x1)
@@ -29,14 +29,14 @@ def part1(antennas: AntennaDict, max_x: int, max_y: int) -> int:
 
     for antenna_type in antennas.values():
         for a1, a2 in permutations(antenna_type, 2):
-            calc_antinode_pos(a1, a2)
+            calc_antinode_pos()
     return len(antinodes)
 
 
 def part2(antennas: AntennaDict, max_x: int, max_y: int) -> int:
     antinodes = set()
 
-    def calc_antinode_pos(a1: tuple[int, int], a2: tuple[int, int]) -> None:
+    def calc_antinode_pos() -> None:
         y1, x1 = a1
         y2, x2 = a2
         new_x = x2 + (x2 - x1)
@@ -49,7 +49,7 @@ def part2(antennas: AntennaDict, max_x: int, max_y: int) -> int:
 
     for antenna_type in antennas.values():
         for a1, a2 in permutations(antenna_type, 2):
-            calc_antinode_pos(a1, a2)
+            calc_antinode_pos()
 
     return len(antinodes)
 
