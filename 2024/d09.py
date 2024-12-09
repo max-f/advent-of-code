@@ -1,114 +1,107 @@
 #!/usr/bin/env python
 
-from utils import utils
-from collections import deque
 from copy import copy
+from typing import Union
 
-"""
-Code for https://adventofcode.com/2024/day/9
-"""
+from utils import utils
 
-
-def find_leftmost_space(disk):
-    for i, val in enumerate(disk):
-        if val == '.':
-            return i
-    return -1
+type Disk = list[Union[int, str]]
 
 
-def find_rightmost_file(disk):
-    for i in range(len(disk) - 1, -1, -1):
-        if disk[i] != '.':
-            return i
-    return -1
+def compact_disk(disk: Disk) -> None:
+    n = len(disk)
+    left, right = 0, n - 1
 
-
-def compact_disk(disk):
-    while True:
-        space_pos = find_leftmost_space(disk)
-        file_pos = find_rightmost_file(disk)
-
-        if space_pos == -1 or file_pos == -1 or file_pos < space_pos:
+    while left < right:
+        while left < n and disk[left] != ".":
+            left += 1
+        if left >= right:
             break
 
-        disk[space_pos] = disk[file_pos]
-        disk[file_pos] = '.'
+        while right > left and disk[right] == ".":
+            right -= 1
+
+        if disk[right] != ".":
+            disk[left], disk[right] = disk[right], "."
+            left += 1
+            right -= 1
 
 
-def calculate_checksum(disk):
-    checksum = 0
-    for pos, file_id in enumerate(disk):
-        if file_id != '.':
-            checksum += pos * file_id
-    return checksum
+def find_file_blocks(disk: Disk) -> dict[int, tuple[int, int]]:
+    blocks = {}
+    start = 0
+    curr_id = disk[0]
+
+    for i in range(1, len(disk)):
+        if disk[i] != curr_id:
+            if curr_id != ".":
+                blocks[curr_id] = (start, i - 1)
+            start = i
+            curr_id = disk[i]
+
+    if curr_id != ".":
+        blocks[curr_id] = (start, len(disk) - 1)
+
+    return blocks
 
 
-def part1(disk: list[int | str]) -> int:
-    compact_disk(disk)
-    # print("Final disk 1:", ''.join(str(x) if x != '.' else '.' for x in disk))
-    return calculate_checksum(disk)
-
-
-def find_free_block(disk, required_length):
-    current_length = 0
-    for i, val in enumerate(disk):
-        if val == '.':
-            current_length += 1
-            if current_length >= required_length:
-                return i - required_length + 1
-        else:
-            current_length = 0
-    return -1
-
-
-def find_file_position(disk, file_id):
-    start = -1
-    end = -1
-    for i, val in enumerate(disk):
-        if val == file_id:
-            if start == -1:
-                start = i
-            end = i
-        elif start != -1:
-            break
-    return start, end
-
-
-def compact_disk2(disk):
-    max_id = max(x for x in disk if x != '.')
+def compact_disk2(disk: Disk) -> None:
+    file_blocks = find_file_blocks(disk)
+    max_id = max(file_blocks.keys(), default=-1)
 
     for file_id in range(max_id, -1, -1):
-        file_start, file_end = find_file_position(disk, file_id)
-        if file_start == -1:
+        if file_id not in file_blocks:
             continue
 
-        file_size = file_end - file_start + 1
-        space_pos = find_free_block(disk, file_size)
+        block_start, block_end = file_blocks[file_id]
+        block_size = block_end - block_start + 1
+        free_start = -1
+        free_count = 0
 
-        if space_pos != -1 and space_pos < file_start:
-            file_content = disk[file_start:file_end + 1]
-            disk[space_pos:space_pos + file_size] = file_content
-            disk[file_start:file_end + 1] = ['.'] * file_size
+        for i in range(block_start):
+            if disk[i] == ".":
+                if free_start == -1:
+                    free_start = i
+                free_count += 1
+                if free_count >= block_size:
+                    break
+            else:
+                free_start = -1
+                free_count = 0
+
+        if free_count >= block_size:
+            disk[free_start : free_start + block_size] = disk[
+                block_start : block_end + 1
+            ]
+            disk[block_start : block_end + 1] = ["."] * block_size
 
 
-def part2(disk: list[int | str]) -> int:
-    compact_disk2(disk)
-    # print("Final disk 2:", ''.join(str(x) if x != '.' else '.' for x in disk))
+def calculate_checksum(disk: Disk) -> int:
+    return sum(pos * file_id for pos, file_id in enumerate(disk) if file_id != ".")
+
+
+def part1(disk: Disk) -> int:
+    compact_disk(disk)
     return calculate_checksum(disk)
 
 
-def main():
+def part2(disk: Disk) -> int:
+    compact_disk2(disk)
+    return calculate_checksum(disk)
+
+
+def main() -> None:
     input_txt = utils.get_input(9)
     disk_map = [int(c) for c in input_txt]
+
+    disk = []
     file_lengths = disk_map[0::2]
     free_spaces = disk_map[1::2]
-    disk = []
-    for i, l in enumerate(file_lengths):
-        disk.extend([i] * l)
-        if i < len(free_spaces):
-            disk.extend(['.'] * free_spaces[i])
-    print("Initial disk:", ''.join(str(x) if x != '.' else '.' for x in disk))
 
+    for i, length in enumerate(file_lengths):
+        disk.extend([i] * length)
+        if i < len(free_spaces):
+            disk.extend(["."] * free_spaces[i])
     disk2 = copy(disk)
 
     print(f"Part1: {part1(disk)}")
