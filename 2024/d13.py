@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
-from utils import utils
-from pprint import pprint
+from z3 import Solver, Int, sat
 
-from math import gcd
+from utils import utils
 
 
 class Machine:
@@ -16,37 +15,43 @@ class Machine:
     def __repr__(self):
         return f"Button A: {self.a[0]}, {self.a[1]} - Button B: {self.b[0]}, {self.b[1]} - Prize: {self.prize[0]}, {self.prize[1]}"
 
-    def solve_dumb(self) -> tuple[int, int]:
-        for x in range(100):
-            for y in range(100):
-                if x * self.a[0] + y * self.b[0] == self.prize[0] and x * self.a[1] + y * self.b[1] == self.prize[1]:
-                    return x, y
-        return -1, -1
+    def solve(self, use_prize2: bool = False) -> tuple[int, int]:
+        target = self.prize2 if use_prize2 else self.prize
+        solver = Solver()
+        x = Int("x")
+        y = Int("y")
+        solver.add(self.a[0] * x + self.b[0] * y == target[0])
+        solver.add(self.a[1] * x + self.b[1] * y == target[1])
+        solver.add(x >= 0)
+        solver.add(y >= 0)
 
-    def solve(self) -> tuple[int, int]:
+        if solver.check() == sat:
+            model = solver.model()
+            x_val = model[x].as_long()
+            y_val = model[y].as_long()
+            return x_val, y_val
+
         return -1, -1
 
 
 def part1(machines: list[Machine]) -> int:
-    total = 0
-    for m in machines:
-        sol = m.solve_dumb()
-        if sol != (-1, -1):
-            total += sol[0] * 3 + sol[1]
-    return total
+    return sum(
+        solution[0] * 3 + solution[1]
+        for m in machines
+        if (solution := m.solve(use_prize2=False)) != (-1, -1)
+    )
 
 
 def part2(machines: list[Machine]) -> int:
-    total = 0
-    for m in machines:
-        sol = m.solve()
-        if sol != (-1, -1):
-            total += sol[0] * 3 + sol[1]
-    return total
+    return sum(
+        solution[0] * 3 + solution[1]
+        for m in machines
+        if (solution := m.solve(use_prize2=True)) != (-1, -1)
+    )
 
 
 def main() -> None:
-    input_txt = utils.get_input(75)
+    input_txt = utils.get_input(13)
 
     machine_list = input_txt.strip().split("\n\n")
     machines = []
