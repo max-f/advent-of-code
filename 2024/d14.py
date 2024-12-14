@@ -12,16 +12,13 @@ class Robot:
         self.pos = start
         self.velocity = velocity
 
-    def __repr__(self):
-        return f"Start: {self.start} - Pos: {self.pos} - Velocity: {self.velocity}"
-
     def position_at_time(self, t: int, max_x: int, max_y: int) -> tuple[int, int]:
         dx = (self.start[0] + self.velocity[0] * t) % max_x
         dy = (self.start[1] + self.velocity[1] * t) % max_y
         return dx, dy
 
 
-def visualize_positions(positions: set[tuple[int, int]], max_x: int, max_y: int):
+def visualize_positions(positions: set[tuple[int, int]], max_x: int, max_y: int) -> str:
     grid = [["." for _ in range(max_x)] for _ in range(max_y)]
     for x, y in positions:
         grid[y][x] = "#"
@@ -33,11 +30,20 @@ def part1(max_x, max_y, robots: list[Robot]) -> int:
     y_border = max_y // 2
 
     def quadrant(x, y):
-        if x < x_border:
-            return 1 if y < y_border else 2
-        elif x > x_border:
-            return 3 if y < y_border else 4
-        return -1
+        if x == x_border or y == y_border:
+            return -1
+
+        is_left = x < x_border
+        is_below = y < y_border
+
+        if is_left and is_below:
+            return 1
+        elif is_left and not is_below:
+            return 2
+        elif not is_left and is_below:
+            return 3
+        else:
+            return 4
 
     positions = [r.position_at_time(100, max_x, max_y) for r in robots]
 
