@@ -2,7 +2,6 @@
 
 from collections import defaultdict
 from math import prod
-from pprint import pprint
 
 from utils import utils
 
@@ -16,67 +15,76 @@ class Robot:
     def __repr__(self):
         return f"Start: {self.start} - Pos: {self.pos} - Velocity: {self.velocity}"
 
+    def position_at_time(self, t: int, max_x: int, max_y: int) -> tuple[int, int]:
+        dx = (self.start[0] + self.velocity[0] * t) % max_x
+        dy = (self.start[1] + self.velocity[1] * t) % max_y
+        return dx, dy
+
 
 def visualize_positions(positions: set[tuple[int, int]], max_x: int, max_y: int):
-    grid = [['.' for _ in range(max_x)] for _ in range(max_y)]
+    grid = [["." for _ in range(max_x)] for _ in range(max_y)]
     for x, y in positions:
-        grid[y][x] = '#'
-    return '\n'.join(''.join(row) for row in grid)
-
-
-def quadrant(robot, max_x, max_y):
-    x_boarder = max_x // 2
-    y_boarder = max_y // 2
-    x, y = robot.pos
-    if x < x_boarder:
-        if y < y_boarder:
-            return 1
-        elif y > y_boarder:
-            return 2
-    elif x > x_boarder:
-        if y < y_boarder:
-            return 3
-        elif y > y_boarder:
-            return 4
-    return -1
+        grid[y][x] = "#"
+    return "\n".join("".join(row) for row in grid)
 
 
 def part1(max_x, max_y, robots: list[Robot]) -> int:
-    def step(robot: Robot):
-        new_x = (robot.pos[0] + robot.velocity[0]) % max_x
-        new_y = (robot.pos[1] + robot.velocity[1]) % max_y
-        robot.pos = (new_x, new_y)
+    x_border = max_x // 2
+    y_border = max_y // 2
 
-    for _ in range(100):
-        for r in robots:
-            step(r)
+    def quadrant(x, y):
+        if x < x_border:
+            return 1 if y < y_border else 2
+        elif x > x_border:
+            return 3 if y < y_border else 4
+        return -1
+
+    positions = [r.position_at_time(100, max_x, max_y) for r in robots]
 
     quadrants = defaultdict(int)
-    for r in robots:
-        q = quadrant(r, max_x, max_y)
+    for pos in positions:
+        q = quadrant(*pos)
         if q != -1:
             quadrants[q] += 1
-    pprint(quadrants)
     return prod(quadrants.values())
 
 
-# Solved by:
+def is_christmas_tree(positions: set[tuple[int, int]]) -> bool:
+    points_by_y = defaultdict(set)
+    for x, y in positions:
+        points_by_y[y].add(x)
+
+    adjacent_row_counts = defaultdict(int)
+    for y, x_values in points_by_y.items():
+        adjacent_count = 0
+        for x in x_values:
+            # Check if there's a point directly adjacent (x ± 1)
+            if (x + 1) in x_values or (x - 1) in x_values:
+                adjacent_count += 1
+        adjacent_row_counts[y] = adjacent_count
+
+    sorted_items_max_adjacent = sorted(
+        list(adjacent_row_counts.items()), key=lambda x: x[1]
+    )
+    # I compare 3rd and 4th rows with most adjacent robot pos due to the 'frame' rows of the picture
+    return (sorted_items_max_adjacent[-3][1] > 14
+            and sorted_items_max_adjacent[-3][1] == (sorted_items_max_adjacent[-4][1] + 2))
+
+
+# Originally solved by:
+# Printing out visualization
 # $ uv run d14.py > tree_out.txt
 # $ rg -C 60 '############################' tree_out.txt
 # :S
 def part2(max_x: int, max_y: int, robots: list[Robot]) -> int:
-    def step(robot: Robot):
-        new_x = (robot.pos[0] + robot.velocity[0]) % max_x
-        new_y = (robot.pos[1] + robot.velocity[1]) % max_y
-        robot.pos = (new_x, new_y)
+    for t in range(1, 10001):
+        positions = set()
+        for robot in robots:
+            pos = robot.position_at_time(t, max_x, max_y)
+            positions.add(pos)
 
-    for t in range(10000):
-        for r in robots:
-            step(r)
-        occupied_positions = set([r.pos for r in robots])
-        print(f"Step: {t + 1}")
-        print(visualize_positions(occupied_positions, max_x, max_y) + "\n\n")
-
+        if is_christmas_tree(positions):
+            return t
     return -1
 
 
