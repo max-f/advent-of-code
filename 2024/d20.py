@@ -1,35 +1,46 @@
 #!/usr/bin/env python
 
 import networkx as nx
+from typing import Iterator
 
 from utils import utils
 
 DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+VALID_TILES = '.SE'
 
+type Point = tuple[int, int]
+type Grid = dict[Point, str]
 
-def taxicab_distance(p1, p2):
+def taxicab_distance(p1: Point, p2: Point) -> int:
     return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
 
+def get_valid_points(grid: Grid) -> Iterator[Point]:
+    return (pos for pos in grid if grid[pos] in VALID_TILES)
 
 def solve(grid, G, start, end, distance_cutoff) -> int:
     normal_path = nx.shortest_path_length(G, start, end, weight="weight")
-
     start_paths = nx.single_source_dijkstra_path_length(G, start, weight="weight")
     end_paths = nx.single_source_dijkstra_path_length(G, end, weight="weight")
 
     valid_cheats = set()
 
     possible_cheat_start_and_end_points = [v for v in grid.keys() if grid[v] in ".SE"]
-    for p in possible_cheat_start_and_end_points:
+    for p in get_valid_points(grid):
+        if p not in start_paths:
+            continue
+
         for q in possible_cheat_start_and_end_points:
+            if q not in end_paths:
+                continue
             if p == q:
                 continue
+
             taxicab = taxicab_distance(p, q)
             if taxicab > distance_cutoff:
                 continue
-            if p in start_paths and q in end_paths:
-                if start_paths[p] + end_paths[q] + taxicab <= normal_path - 100:
-                    valid_cheats.add(tuple(sorted([p, q])))
+
+            if start_paths[p] + end_paths[q] + taxicab <= normal_path - 100:
+                valid_cheats.add(tuple(sorted([p, q])))
 
     return len(valid_cheats)
 
