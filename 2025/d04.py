@@ -42,14 +42,10 @@ def part2(grid) -> int:
 def part1(grid) -> int:
     accessible = 0
     for pos, c in grid.items():
-        other_rolls = 0
         if c != '@':
             continue
-        for d in DIRECTIONS:
-            adj = utils.tuple_add(pos, d)
-            if adj in grid and grid[adj] == '@':
-                other_rolls += 1
-        if other_rolls < 4:
+        neighbor_rolls = count_neighbors(grid, pos)
+        if neighbor_rolls < 4:
             accessible += 1
     return accessible
 
