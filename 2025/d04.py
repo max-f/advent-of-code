@@ -11,9 +11,11 @@ DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0), (-1, -1), (-1, 1), (1, -1), (1, 
 
 def count_neighbors(grid, pos):
     return sum(
-       1 for d in DIRECTIONS
+        1
+        for d in DIRECTIONS
         if (adj := utils.tuple_add(pos, d)) in grid and grid[adj] == "@"
     )
+
 
 def part2(grid) -> int:
     grid = grid.copy()
@@ -22,7 +24,7 @@ def part2(grid) -> int:
     while True:
         to_remove = []
         for pos, c in grid.items():
-            if c != '@':
+            if c != "@":
                 continue
             other_rolls = count_neighbors(grid, pos)
             if other_rolls < 4:
@@ -32,7 +34,7 @@ def part2(grid) -> int:
             break
 
         for pos in to_remove:
-            grid[pos] = '.'
+            grid[pos] = "."
 
         total_removed += len(to_remove)
 
@@ -42,7 +44,7 @@ def part2(grid) -> int:
 def part1(grid) -> int:
     accessible = 0
     for pos, c in grid.items():
-        if c != '@':
+        if c != "@":
             continue
         neighbor_rolls = count_neighbors(grid, pos)
         if neighbor_rolls < 4:
@@ -54,11 +56,7 @@ def main():
     input_txt = utils.get_input(4)
     lines = input_txt.strip().split("\n")
 
-    grid = {
-        (y, x): c
-        for y, line in enumerate(lines)
-        for x, c in enumerate(line)
-    }
+    grid = {(y, x): c for y, line in enumerate(lines) for x, c in enumerate(line)}
     print(f"Part1: {part1(grid)}")
     print(f"Part1: {part2(grid)}")
 

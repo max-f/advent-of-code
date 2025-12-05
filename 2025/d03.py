@@ -25,7 +25,7 @@ def part1(banks) -> int:
     total = 0
     for bank in banks:
         numbers = select_n_numbers(bank, 2)
-        total += int(''.join(map(str, numbers)))
+        total += int("".join(map(str, numbers)))
     return total
 
 
@@ -33,7 +33,7 @@ def part2(banks) -> int:
     total = 0
     for bank in banks:
         numbers = select_n_numbers(bank, 12)
-        total += int(''.join(map(str, numbers)))
+        total += int("".join(map(str, numbers)))
     return total
 
 
