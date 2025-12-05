@@ -9,7 +9,7 @@ Code for https://adventofcode.com/2025/day/5
 """
 
 
-def merge_ranges(ranges):
+def merge_ranges(ranges: list[tuple[int, int]]) -> list[tuple[int, int]]:
     sorted_ranges = sorted(ranges)
     merged = [sorted_ranges[0]]
 
@@ -24,7 +24,9 @@ def merge_ranges(ranges):
     return merged
 
 
-def is_element_of_range(number, range_index, ranges):
+def is_element_of_range(
+    number: int, range_index: list[int], ranges: list[tuple[int, int]]
+) -> bool:
     idx = bisect.bisect_right(range_index, number) - 1
 
     if idx >= 0:
