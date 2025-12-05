@@ -10,9 +10,6 @@ Code for https://adventofcode.com/2025/day/5
 
 
 def merge_ranges(ranges):
-    if not ranges:
-        return []
-
     sorted_ranges = sorted(ranges)
     merged = [sorted_ranges[0]]
 
@@ -27,9 +24,8 @@ def merge_ranges(ranges):
     return merged
 
 
-def is_element_of_range(number, ranges):
-    starts = [start for start, _ in ranges]
-    idx = bisect.bisect_right(starts, number) - 1
+def is_element_of_range(number, range_index, ranges):
+    idx = bisect.bisect_right(range_index, number) - 1
 
     if idx >= 0:
         start, end = ranges[idx]
@@ -41,16 +37,20 @@ def main():
     input_txt = utils.get_input(5)
 
     id_ranges, ingredients = input_txt.split("\n\n")
-    range_lines = id_ranges.split("\n")
-    ranges = [(int(x), int(y)) for line in range_lines for x, y in [line.split("-")]]
+    ranges = [
+        (int(x), int(y))
+        for line in id_ranges.splitlines()
+        for x, y in [line.split("-")]
+    ]
     merged_ranges = merge_ranges(ranges)
 
     p2 = sum((end - start) + 1 for start, end in merged_ranges)
 
+    range_index = [start for start, _ in merged_ranges]
     p1 = sum(
         1
         for s in ingredients.splitlines()
-        if is_element_of_range(int(s), merged_ranges)
+        if is_element_of_range(int(s), range_index, merged_ranges)
     )
 
     print(f"Part1: {p1}")
